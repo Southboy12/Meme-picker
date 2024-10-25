@@ -3,34 +3,18 @@ import { catsData } from "./data"
 const emotionEl = document.querySelector('#emotion-radios')
 const getImageBtn = document.querySelector('#get-image-btn')
 const isGifEl = document.querySelector('#gifs-only-option')
+const modalEl = document.querySelector('#meme-modal-inner')
+const memeModalEL = document.querySelector('#meme-modal')
+const cancelBtn = document.querySelector('#meme-modal-close-btn')
 
-
-getImageBtn.addEventListener('click', renderCat)
 
 emotionEl.addEventListener('change', highlightCheckedOption)
 
-function getMatchingCatsArray() {
+cancelBtn.addEventListener('click', closeModal)
 
-    if (document.querySelector('input[type=radio]:checked')) {
-        const selectedItem = document.querySelector('input[type=radio]:checked').value
-        console.log(selectedItem);
-        const isGifChecked = isGifEl.checked
-    
-        if (!isGifChecked) {
-            const catMood = catsData.filter(function(cat) {
-                return cat.emotionTags.includes(selectedItem)
-            })
-            console.log(catMood);
-        } else {
-            const catMood = catsData.filter(function(cat) {
-                return cat.isGif === true && cat.emotionTags.includes(selectedItem)           
-            })
-        return catMood
-        }   
-    }    
-}
+getImageBtn.addEventListener('click', renderCat)
 
-    
+
 function highlightCheckedOption(e) {
 
     const radios = document.querySelectorAll('.radio')
@@ -39,15 +23,71 @@ function highlightCheckedOption(e) {
     }
     document.getElementById(e.target.id).parentElement.classList.add('highlight')
 }
-    
-function getSingleCatObject() {
-    console.log(getMatchingCatsArray());
-    
+
+function closeModal() {
+
+    modalEl.innerHTML = ""
+    memeModalEL.style.display = "none"
 }
 
 function renderCat() {
-    getSingleCatObject()
+    const catObject = getSingleCatObject()
+    modalEl.innerHTML = `
+    <img
+    class="cat-img"
+    src="./images/${catObject.image}"
+    alt="CAT ALT TEXT"
+    >
+    `
+    console.log(catObject.image);
+    
+    memeModalEL.style.display = "flex"
 }
+
+function getMatchingCatsArray() {
+
+    if (document.querySelector('input[type=radio]:checked')) {
+        const selectedItem = document.querySelector('input[type=radio]:checked').value
+        console.log(selectedItem);
+        const isGifChecked = isGifEl.checked
+    
+        const matchingCatsArray = catsData.filter(function(cat) {
+
+            if (!isGifChecked) {
+                return cat.emotionTags.includes(selectedItem)
+            }
+            else {
+                return cat.isGif === true && cat.emotionTags.includes(selectedItem)           
+            }
+        })
+        return matchingCatsArray   
+    }    
+}
+
+function getSingleCatObject() {
+    const catsArray = getMatchingCatsArray();
+    
+    if (catsArray.length === 1) {
+        return catsArray[0]
+    }
+    else {
+        const randonNumber = Math.floor(Math.random() * catsArray.length)
+        return catsArray[randonNumber]         
+        
+        
+    }
+    
+}
+
+
+
+
+
+
+
+    
+
+    
 
 function getEmotionsArray(cats){
     const listEmotion = []
